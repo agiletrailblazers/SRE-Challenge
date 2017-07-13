@@ -41,8 +41,11 @@
       register: ec2
     - name: Add new instance to host group
   #    local_action:  add_host path /Users/sasikumaranandan/Desktop/ATB_Projects/DevOps/Comcast/ecs_ansible_tf/ansible/hosts hostname="{{ item.public_ip }}" ansible_ssh_user=ubuntu groups=apache
-      add_host: hostname={{ item.public_ip }} groupname=apache
+      add_host: hostname="{{ item.public_ip }}" groupname=apache ansible_ssh_user=ubuntu
       with_items: "{{ ec2.instances }}"
+
+
+
     - name: Wait for SSH to come up
       wait_for:
         host: "{{ item.public_dns_name }}"

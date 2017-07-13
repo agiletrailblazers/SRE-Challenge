@@ -1,7 +1,11 @@
 - hosts: apache
+  vars:
+    http_port: 80
+    https_port: 443
+    domain: ec2-174-129-48-56.compute-1.amazonaws.com
   sudo: yes
   remote_user: ubuntu
-  gather_facts: no
+  gather_facts: True
   tasks:
     - shell: "(cd /; mkdir /home/ubuntu/madebyansible; sudo apt-get update && sudo apt-get upgrade; sudo apt-get -y install apache2 apache2-doc apache2-utils)"
       async: 10
@@ -9,4 +13,14 @@
     - copy: src=install_apache.sh dest=/home/ubuntu/install_apache-script.sh mode=a+x
     - copy: 'src=landing.html dest=/var/www/html/landing.html'
     - copy: 'src=apache2.conf dest=/home/ubuntu/apache2.conf'
+    - copy: 'src=apache2.crt dest=/etc/ssl/certs/apache2.crt'
+    - copy: 'src=apache2.key dest=/etc/ssl/certs/apache2.key'
     - command: /home/ubuntu/install_apache-script.sh
+    - lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:" line="<VirtualHost *:{{ http_port }}>"
+    - name: create virtual host file
+      template: src=virtualhost.conf dest=/etc/apache2/sites-available/{{ domain }}.conf
+    - name: a2ensite {{ domain }}
+      command: a2ensite {{ domain }}
+      args:
+        creates: /etc/apache2/sites-enabled/{{ domain }}.conf
+      command: service apache2 restart

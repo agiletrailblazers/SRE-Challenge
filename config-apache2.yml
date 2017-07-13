@@ -10,6 +10,7 @@
     - shell: "(cd /; mkdir /home/ubuntu/madebyansible; sudo apt-get update && sudo apt-get upgrade; sudo apt-get -y install apache2 apache2-doc apache2-utils)"
       async: 10
       poll: 0
+# Copying apache config files
     - copy: src=install_apache.sh dest=/home/ubuntu/install_apache-script.sh mode=a+x
     - copy: 'src=landing.html dest=/var/www/html/landing.html'
     - copy: 'src=apache2.conf dest=/home/ubuntu/apache2.conf'
@@ -24,12 +25,12 @@
       args:
         creates: /etc/apache2/sites-enabled/{{ domain }}.conf
       command: service apache2 restart
-
+# Validating the apache config
     - uri:
         url: http://ec2-174-129-48-56.compute-1.amazonaws.com
         return_content: yes
         validate_certs: False
-      register: webpage
+      register: webpage      
     - name: Fail if Hello is not in the page content
       fail:
       when: "'Hello' not in webpage.content"

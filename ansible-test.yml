@@ -5,7 +5,7 @@
   tasks:
 
     - name: Create a security group
-        local_action:
+      local_action:
           module: ec2_group
           name: "SRE challenge"
           description: Security Group for webserver Servers

@@ -4,10 +4,31 @@
 
   tasks:
 
+    - name: Create a security group
+        local_action:
+          module: ec2_group
+          name: "SRE challenge"
+          description: Security Group for webserver Servers
+          region: "us-east-1"
+          rules:
+            - proto: tcp
+              from_port: 22
+              to_port: 22
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 80
+              to_port: 80
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 443
+              to_port: 443
+              cidr_ip: 0.0.0.0/0
+      register: basic_firewall
+
     - name: Provision a set of instances
       ec2:
          key_name: atb-rotation-key
-         group: "launch-wizard-5"
+         group: "SRE challenge"
          region: "us-east-1"
          instance_type: t2.micro
          image: "ami-234c4335"

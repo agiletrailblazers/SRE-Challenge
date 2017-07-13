@@ -1,0 +1,9 @@
+- hosts: apache
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - shell: "(cd /; mkdir /home/ubuntu/madebyansible; sudo apt-get update && sudo apt-get upgrade; sudo apt-get -y install apache2 apache2-doc apache2-utils)"
+      async: 10
+      poll: 0
+    - copy: src=install_apache.sh dest=/home/ubuntu/install_apache-script.sh mode=a+x
+    - command: /home/ubuntu/install_apache-script.sh

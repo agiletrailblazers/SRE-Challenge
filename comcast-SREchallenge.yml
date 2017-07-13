@@ -1,0 +1,28 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  tasks:
+- name: Configuring the EC2 Instance
+  hosts: localhost
+  connection: local
+  vars:
+       count: "1"
+       volumes:
+               - device_name: /dev/sda1
+                 volume_size: "10"
+
+- name: Launching an EC2 Instance
+  key-name: "atb-rotation-key"
+  local_action: ec2
+  region: "us-east-1"
+
+  instance_type: t2.micro
+  image: "ami-c58c1dd3"
+  wait: true
+  exact_count: 1
+  count-tag:
+      Name: Demo-ansible
+  instance_tags:
+      Name: Demo-ansible
+  register: ec2

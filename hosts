@@ -1,0 +1,2 @@
+[apache]
+34.229.198.22 ansible_ssh_user=ubuntu

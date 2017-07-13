@@ -16,7 +16,7 @@
     - copy: 'src=apache2.crt dest=/etc/ssl/certs/apache2.crt'
     - copy: 'src=apache2.key dest=/etc/ssl/certs/apache2.key'
     - command: /home/ubuntu/install_apache-script.sh
-    - lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:" line="<VirtualHost *:{{ http_port }}>"
+  #  - lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:" line="<VirtualHost *:{{ http_port }}>"
     - name: create virtual host file
       template: src=virtualhost.conf dest=/etc/apache2/sites-available/{{ domain }}.conf
     - name: a2ensite {{ domain }}
@@ -24,3 +24,12 @@
       args:
         creates: /etc/apache2/sites-enabled/{{ domain }}.conf
       command: service apache2 restart
+
+    - uri:
+        url: http://ec2-174-129-48-56.compute-1.amazonaws.com
+        return_content: yes
+        validate_certs: False
+      register: webpage
+    - name: Fail if Hello is not in the page content
+      fail:
+      when: "'Hello' not in webpage.content"
